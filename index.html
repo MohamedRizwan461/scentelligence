@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scentelligence — Find Your Perfume</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="hero">
+      <div class="mark">⚜️</div>
+      <h1>Scent<span class="accent">elligence</span></h1>
+      <p class="sub">Stop guessing from a list of notes. Tell me your vibe, the
+        perfumes you love and hate, and your budget — I'll translate it into
+        scents you can actually picture, and show you where to buy (or sample first).</p>
+    </header>
+
+    <div id="load-error" class="card hidden" style="border-color:#e0708a;">
+      ⚠️ Couldn't load the fragrance data. If you opened this file directly,
+      run it through a tiny local server instead (see the README), or host it.
+    </div>
+
+    <!-- STEP 1: vibe quiz -->
+    <section class="card step">
+      <h2><span class="num">1</span> Your vibe</h2>
+      <p class="hint">For people who don't know any perfumes yet — just pick what sounds like you.</p>
+
+      <p style="margin:0 0 8px;font-weight:600;">Do you lean fresh or warm?</p>
+      <div class="choices" id="q-character">
+        <span class="choice" data-value="fresh">🌊 Fresh & clean</span>
+        <span class="choice" data-value="balanced">⚖️ A bit of both</span>
+        <span class="choice" data-value="warm">🔥 Warm & cozy</span>
+      </div>
+
+      <p style="margin:18px 0 8px;font-weight:600;">Sweet or dry?</p>
+      <div class="choices" id="q-sweetness">
+        <span class="choice" data-value="sweet">🍯 Sweet</span>
+        <span class="choice" data-value="balanced">😌 Balanced</span>
+        <span class="choice" data-value="dry">🌿 Dry / not sweet</span>
+      </div>
+
+      <p style="margin:18px 0 8px;font-weight:600;">Which scent families appeal to you? (pick any)</p>
+      <div class="choices" id="q-family">
+        <span class="choice" data-value="citrus">🍋 Citrus</span>
+        <span class="choice" data-value="aquatic">💧 Aquatic</span>
+        <span class="choice" data-value="green">🍃 Green</span>
+        <span class="choice" data-value="floral">🌸 Floral</span>
+        <span class="choice" data-value="sweet">🍮 Sweet</span>
+        <span class="choice" data-value="gourmand">🍰 Gourmand (dessert)</span>
+        <span class="choice" data-value="woody">🪵 Woody</span>
+        <span class="choice" data-value="spicy">🌶️ Spicy</span>
+        <span class="choice" data-value="smoky">💨 Smoky</span>
+        <span class="choice" data-value="leather">🧥 Leather</span>
+        <span class="choice" data-value="powdery">🤍 Powdery</span>
+      </div>
+
+      <p style="margin:18px 0 8px;font-weight:600;">Mainly for which season?</p>
+      <div class="choices" id="q-season">
+        <span class="choice" data-value="any">🗓️ Any time</span>
+        <span class="choice" data-value="summer">☀️ Summer</span>
+        <span class="choice" data-value="spring">🌷 Spring</span>
+        <span class="choice" data-value="winter">❄️ Winter</span>
+      </div>
+
+      <p style="margin:18px 0 8px;font-weight:600;">Mainly for what occasion?</p>
+      <div class="choices" id="q-occasion">
+        <span class="choice" data-value="everyday">🚶 Everyday</span>
+        <span class="choice" data-value="office">💼 Office</span>
+        <span class="choice" data-value="date">❤️ Date</span>
+        <span class="choice" data-value="night">🌙 Night out</span>
+      </div>
+
+      <p style="margin:18px 0 8px;font-weight:600;">How strong do you want it to project?</p>
+      <div class="choices" id="q-strength">
+        <span class="choice" data-value="soft">🤏 Soft & close</span>
+        <span class="choice selected" data-value="moderate">👌 Moderate</span>
+        <span class="choice" data-value="strong">📢 Strong / loud</span>
+      </div>
+
+      <p style="margin:18px 0 8px;font-weight:600;">Show me scents marketed as: (optional — pick any)</p>
+      <div class="choices" id="q-gender">
+        <span class="choice" data-value="men">For men</span>
+        <span class="choice" data-value="women">For women</span>
+        <span class="choice" data-value="unisex">Unisex</span>
+      </div>
+    </section>
+
+    <!-- STEP 2: like / dislike -->
+    <section class="card step">
+      <h2><span class="num">2</span> Perfumes you love / can't stand</h2>
+      <p class="hint">Optional but powerful — if you already know some, this sharpens the match a lot.</p>
+
+      <p style="margin:0 0 8px;font-weight:600;color:var(--good);">❤️ Perfumes I love</p>
+      <div class="ac">
+        <input type="text" id="like-input" placeholder="Type a perfume… e.g. Dior Sauvage" autocomplete="off" />
+        <div class="ac-list" id="like-list"></div>
+      </div>
+      <div class="tags" id="like-tags"></div>
+
+      <p style="margin:18px 0 8px;font-weight:600;color:var(--bad);">🚫 Perfumes I dislike</p>
+      <div class="ac">
+        <input type="text" id="dislike-input" placeholder="Type a perfume you didn't like…" autocomplete="off" />
+        <div class="ac-list" id="dislike-list"></div>
+      </div>
+      <div class="tags" id="dislike-tags"></div>
+    </section>
+
+    <!-- STEP 3: budget -->
+    <section class="card step">
+      <h2><span class="num">3</span> Budget</h2>
+      <p class="hint">Max you'd spend on a bottle. I'll only show options you can actually afford.</p>
+      <div class="budget-row">
+        <input type="range" id="budget" min="20" max="500" step="10" value="150" />
+        <span class="budget-val" id="budget-val">$150</span>
+      </div>
+    </section>
+
+    <div class="cta-row">
+      <button class="primary" id="find-btn">Find my scent →</button>
+    </div>
+
+    <!-- RESULTS -->
+    <section id="results" class="hidden" style="margin-top:40px;">
+      <div class="results-head">
+        <h2>Your matches</h2>
+        <button class="ghost" id="reset-btn">Start over</button>
+      </div>
+      <div class="results-grid" id="results-grid"></div>
+
+      <p class="disclaimer">
+        💡 Tip: perfumes smell different on everyone's skin. Before buying a full
+        bottle of something non-returnable, use the <strong>"Try a sample first"</strong>
+        link to get a cheap 2–5ml decant and test it for a few days.
+        Prices shown are typical ranges and may vary by retailer and bottle size.
+      </p>
+    </section>
+
+    <footer>
+      Scentelligence · a content-based ML matcher running entirely in your browser ·
+      built for Rizwan
+    </footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
