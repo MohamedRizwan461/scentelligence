@@ -205,13 +205,32 @@
     <div class="cta-panel">
       <button class="primary" id="find-btn">Reveal my matches</button>
       <p class="cta-sub">165 fragrances &middot; matched privately in your browser</p>
+
+      <div class="ai-cta">
+        <span class="ai-or">or</span>
+        <button class="secondary" id="ai-find-btn" type="button">Recommend with live web search</button>
+        <button class="keylink" id="key-toggle" type="button">Connect Gemini (free)</button>
+      </div>
+
+      <div id="key-panel" class="key-panel hidden">
+        <p class="key-help">AI web-search recommendations are powered by Google Gemini.
+          Get a <strong>free</strong> API key at
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a>
+          and paste it below. It is stored only in your browser (localStorage) — never uploaded, committed, or shared.</p>
+        <div class="key-row">
+          <input type="password" id="key-input" placeholder="Paste your free Gemini API key" autocomplete="off" />
+          <button id="key-save" type="button">Save</button>
+          <button id="key-clear" class="key-clear" type="button">Remove</button>
+        </div>
+        <p class="key-status" id="key-status"></p>
+      </div>
     </div>
 
     <!-- RESULTS -->
     <section id="results" class="hidden">
       <div class="results-head">
         <div>
-          <span class="eyebrow">Curated for you</span>
+          <span class="eyebrow" id="results-mode">Curated for you</span>
           <h2>Your matches</h2>
         </div>
         <button class="ghost" id="reset-btn">Start over</button>

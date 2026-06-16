@@ -341,6 +341,159 @@ function setupLookup() {
   });
 }
 
+/* --------------------- AI web-search recommendations ------------------ */
+// Optional mode: Google Gemini (free key, brought by the user and stored only
+// in this browser) searches the live web and returns ranked fragrance picks
+// with a match score. The offline engine above remains the default.
+
+const GEMINI_MODEL = "gemini-2.0-flash";
+
+function getKey() { try { return localStorage.getItem("gemini_key") || ""; } catch (_) { return ""; } }
+function setKey(k) { try { k ? localStorage.setItem("gemini_key", k) : localStorage.removeItem("gemini_key"); } catch (_) {} }
+
+function buildAiPrompt() {
+  const q = state.quiz;
+  const byId = Object.fromEntries(PERFUMES.map(p => [p.id, p]));
+  const nameOf = id => (byId[id] ? `${byId[id].brand} ${byId[id].name}` : id);
+  const L = [];
+  L.push("You are an expert fragrance consultant. Use Google Search to find REAL, currently-available fragrances that best fit the person described, then score how well each fits.");
+  L.push("");
+  L.push("Preferences:");
+  if (q.character) L.push(`- Overall feel: ${q.character === "fresh" ? "fresh & clean" : q.character === "warm" ? "warm & cozy" : "a mix of fresh and warm"}`);
+  if (q.sweetness) L.push(`- Sweetness: ${q.sweetness}`);
+  if (q.family && q.family.length) L.push(`- Favoured scent families: ${q.family.join(", ")}`);
+  if (q.season && q.season !== "any") L.push(`- Season: ${q.season}`);
+  if (q.occasion) L.push(`- Occasion: ${q.occasion}`);
+  if (q.strength) L.push(`- Desired projection: ${q.strength}`);
+  if (state.genders.length) L.push(`- Marketed for: ${state.genders.join(", ")} (unisex is also fine)`);
+  if (state.likedIds.length) L.push(`- Loves these perfumes: ${state.likedIds.map(nameOf).join(", ")}`);
+  if (state.dislikedIds.length) L.push(`- Dislikes these perfumes: ${state.dislikedIds.map(nameOf).join(", ")}`);
+  L.push(`- Budget: ${state.budgetMax >= 500 ? "no strict limit" : "$" + state.budgetMax + " USD or less per bottle"}`);
+  if (state.refine.includes("edp")) L.push("- Only EDP or stronger concentrations (no light EDTs/colognes).");
+  if (state.refine.includes("beast")) L.push("- Only strong, long-lasting 'beast mode' performers.");
+  L.push("");
+  L.push("Recommend 6 to 8 fragrances, ordered best-first. Respect the budget strictly. Give an honest matchPct (0-100) for THIS person.");
+  L.push("Output ONLY a JSON array — no prose, no markdown. Each element:");
+  L.push('{"name":"","brand":"","gender":"men|women|unisex","matchPct":0,"concentration":"EDP|EDT|Extrait|Parfum|Cologne","priceUSD":"approx $X-$Y","smellsLike":"plain-language description an average person can picture","keyNotes":["note","note","note"],"why":"one short sentence on why it fits"}');
+  return L.join("\n");
+}
+
+async function geminiRequest(key, prompt, useSearch) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`;
+  const body = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } };
+  if (useSearch) body.tools = [{ google_search: {} }];
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (!res.ok) {
+    let msg = "request failed (" + res.status + ")";
+    try { const e = await res.json(); if (e.error && e.error.message) msg = e.error.message; } catch (_) {}
+    const err = new Error(msg); err.status = res.status; throw err;
+  }
+  const data = await res.json();
+  const parts = (((data.candidates || [])[0] || {}).content || {}).parts || [];
+  return parts.map(p => p.text || "").join("");
+}
+
+async function callGemini(key, prompt) {
+  try {
+    return await geminiRequest(key, prompt, true);
+  } catch (e) {
+    // If web-search grounding isn't available on this key/region, retry without it.
+    if (/search|grounding|tool/i.test(e.message || "")) return geminiRequest(key, prompt, false);
+    throw e;
+  }
+}
+
+function parseAiJson(text) {
+  let t = (text || "").trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) t = fence[1];
+  const s = t.indexOf("["), e = t.lastIndexOf("]");
+  if (s >= 0 && e > s) t = t.slice(s, e + 1);
+  return JSON.parse(t);
+}
+
+function aiCard(it) {
+  const q = `${it.brand || ""} ${it.name || ""}`.trim();
+  const pct = Math.max(0, Math.min(100, parseInt(it.matchPct, 10) || 0));
+  const notes = Array.isArray(it.keyNotes) ? it.keyNotes : [];
+  const notesHtml = notes.map(n => {
+    const tip = GLOSSARY[n] ? ` data-tip="${esc(GLOSSARY[n])}"` : "";
+    return `<span class="note-pill"${tip}>${esc(n)}</span>`;
+  }).join("");
+  const links = lookupLinks(q);
+  return `
+    <div class="pcard">
+      <div class="top">
+        <div>
+          <p class="name">${esc(it.name || "")}</p>
+          <p class="brand">${esc(it.brand || "")}${it.gender ? " &middot; " + esc(it.gender) : ""}</p>
+        </div>
+        <div class="match"><span class="pct">${pct}%</span><span class="lbl">Match</span></div>
+      </div>
+      ${it.smellsLike ? `<div class="smells"><span class="lead">Smells like</span>${esc(it.smellsLike)}</div>` : ""}
+      ${it.why ? `<div class="reasons"><span class="reasons-lbl">Why it fits</span>${esc(it.why)}</div>` : ""}
+      ${notesHtml ? `<div class="notes-line"><span class="nl-lbl">Notes</span>${notesHtml}</div>` : ""}
+      <div class="meta-row">
+        ${it.priceUSD ? `<span class="price">${esc(it.priceUSD)}</span>` : ""}
+        ${it.concentration ? `<span><span class="meta-cap">Conc.</span>${esc(it.concentration)}</span>` : ""}
+      </div>
+      <div class="buy-row">
+        ${links.map(b => `<a class="buy${b.sample ? " sample" : ""}" href="${b.url}" target="_blank" rel="noopener">${b.label}</a>`).join("")}
+      </div>
+    </div>`;
+}
+
+async function runAi() {
+  const key = getKey();
+  if (!key) {
+    const panel = document.getElementById("key-panel");
+    if (panel) panel.classList.remove("hidden");
+    setKeyStatus("Add your free Gemini key to use AI web-search recommendations.");
+    return;
+  }
+  if (!state.quiz.character && !state.likedIds.length && !(state.quiz.family || []).length) {
+    alert("Tell me a little about your taste first — a vibe, a scent family, or a perfume you like.");
+    return;
+  }
+  const results = document.getElementById("results");
+  const grid = document.getElementById("results-grid");
+  const mode = document.getElementById("results-mode");
+  if (mode) mode.textContent = "AI · web-searched with Gemini";
+  results.classList.remove("hidden");
+  grid.innerHTML = `<div class="empty">Searching the web for your matches&hellip;</div>`;
+  results.scrollIntoView({ behavior: "smooth", block: "start" });
+  try {
+    const text = await callGemini(key, buildAiPrompt());
+    const list = parseAiJson(text);
+    if (!Array.isArray(list) || !list.length) throw new Error("no results parsed");
+    grid.innerHTML = list.map(aiCard).join("");
+  } catch (e) {
+    grid.innerHTML = `<div class="empty">Couldn't get AI recommendations &mdash; ${esc(e.message || "error")}.<br>
+      <span style="font-size:14px">Check your Gemini key, or use the offline matches above.</span></div>`;
+  }
+}
+
+function setKeyStatus(msg) { const s = document.getElementById("key-status"); if (s) s.textContent = msg; }
+function refreshKeyUi() {
+  const has = !!getKey();
+  const toggle = document.getElementById("key-toggle");
+  if (toggle) toggle.textContent = has ? "Gemini: connected" : "Connect Gemini (free)";
+}
+function setupAi() {
+  const input = document.getElementById("key-input");
+  if (input) input.value = getKey();
+  const toggle = document.getElementById("key-toggle");
+  const panel = document.getElementById("key-panel");
+  if (toggle && panel) toggle.addEventListener("click", () => panel.classList.toggle("hidden"));
+  const save = document.getElementById("key-save");
+  if (save) save.addEventListener("click", () => { setKey(input.value.trim()); refreshKeyUi(); setKeyStatus("Saved — stored only in this browser."); });
+  const clear = document.getElementById("key-clear");
+  if (clear) clear.addEventListener("click", () => { setKey(""); if (input) input.value = ""; refreshKeyUi(); setKeyStatus("Key removed."); });
+  const aiBtn = document.getElementById("ai-find-btn");
+  if (aiBtn) aiBtn.addEventListener("click", runAi);
+  refreshKeyUi();
+}
+
 /* ------------------------------ run ----------------------------------- */
 
 function run() {
@@ -359,6 +512,8 @@ function run() {
     beastMode: state.refine.includes("beast"),
     topN: 8
   });
+  const mode = document.getElementById("results-mode");
+  if (mode) mode.textContent = "Curated · matched in your browser";
   renderResults(recs);
   document.getElementById("results").classList.remove("hidden");
   document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -380,6 +535,7 @@ async function init() {
   setupAutocomplete("dislike-input", "dislike-list", "dislike");
   setupBudget();
   setupLookup();
+  setupAi();
   document.getElementById("find-btn").addEventListener("click", run);
   document.getElementById("reset-btn").addEventListener("click", () => location.reload());
 }

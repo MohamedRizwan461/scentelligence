@@ -211,6 +211,33 @@ button.primary {
 }
 button.primary:hover { background: transparent; color: var(--gold); }
 .cta-sub { margin: 18px 0 0; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+
+/* AI web-search recommendation controls */
+.ai-cta { margin-top: 26px; display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+.ai-or { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+button.secondary {
+  font-family: var(--sans); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; font-weight: 400;
+  background: transparent; color: var(--gold); border: 1px solid var(--gold);
+  padding: 14px 30px; border-radius: 2px; cursor: pointer; transition: background-color .18s, color .18s;
+}
+button.secondary:hover { background: var(--gold); color: var(--on-gold); }
+button.keylink {
+  background: none; border: none; color: var(--muted); font-family: var(--sans);
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
+  border-bottom: 1px solid var(--line-2); padding: 4px 0;
+}
+button.keylink:hover { color: var(--gold); border-bottom-color: var(--gold); }
+.key-panel { max-width: 580px; margin: 24px auto 0; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 3px; padding: 22px 24px; box-shadow: var(--shadow); }
+.key-help { font-size: 13px; color: var(--ink-soft); line-height: 1.65; margin: 0 0 16px; }
+.key-help a { color: var(--gold); }
+.key-help strong { color: var(--ink); font-weight: 500; }
+.key-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.key-row input { flex: 1; min-width: 220px; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 2px; color: var(--ink); padding: 12px 13px; font-family: var(--sans); font-size: 14px; }
+.key-row input:focus { outline: none; border-color: var(--gold); }
+.key-row button { font-family: var(--sans); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: var(--gold); color: var(--on-gold); border: none; border-radius: 2px; padding: 0 20px; cursor: pointer; }
+.key-row button.key-clear { background: transparent; color: var(--muted); border: 1px solid var(--line-2); }
+.key-row button.key-clear:hover { color: var(--ink); }
+.key-status { font-size: 12px; color: var(--gold); margin: 13px 0 0; letter-spacing: .03em; min-height: 1em; }
 button.ghost {
   font-family: var(--sans); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
   background: none; border: none; cursor: pointer; padding: 4px 0; border-bottom: 1px solid var(--line-2);
