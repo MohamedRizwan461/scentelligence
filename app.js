@@ -225,6 +225,122 @@ function renderResults(recs) {
   }).join("");
 }
 
+/* ------------------------ live fragrance lookup ----------------------- */
+// "Search the library & the web": instant match against our curated set,
+// a live web summary via DuckDuckGo's CORS-open Instant Answer API, and
+// one-click deep links to the fragrance databases for full notes.
+
+function lookupLinks(q) {
+  const e = encodeURIComponent(q);
+  return [
+    { label: "Google notes", url: `https://www.google.com/search?q=${e}+fragrance+notes` },
+    { label: "Fragrantica", url: `https://www.fragrantica.com/search/?query=${e}` },
+    { label: "Parfumo", url: `https://www.google.com/search?q=site:parfumo.com+${e}` },
+    { label: "Sephora", url: `https://www.sephora.com/search?keyword=${e}` },
+    { label: "FragranceX", url: `https://www.fragrancex.com/search/search_results?stext=${e}` },
+    { label: "Sample first", url: `https://www.scentsplit.com/search?q=${e}`, sample: true }
+  ];
+}
+
+function catalogCard(p) {
+  return `
+    <div class="pcard">
+      <div class="top">
+        <div>
+          <p class="name">${esc(p.name)}</p>
+          <p class="brand">${esc(p.brand)} &middot; ${esc(p.gender)} &middot; ${esc(p.year)}</p>
+        </div>
+        <div class="match"><span class="lbl">In library</span></div>
+      </div>
+      <div class="smells"><span class="lead">Smells like</span>${esc(p.smellsLike)}</div>
+      <div class="notes-line"><span class="nl-lbl">Notes</span>${notePills(p)}</div>
+      <div class="meta-row">
+        <span class="price">$${p.priceRangeUSD[0]}–$${p.priceRangeUSD[1]}</span>
+        <span><span class="meta-cap">Conc.</span>${esc(p.concentration || "EDP")}</span>
+        <span><span class="meta-cap">Projection</span>${esc(p.strength)}</span>
+      </div>
+      <div class="buy-row">
+        ${buyLinks(p).map(b => `<a class="buy${b.sample ? " sample" : ""}" href="${b.url}" target="_blank" rel="noopener">${b.label}</a>`).join("")}
+      </div>
+    </div>`;
+}
+
+async function fetchWebSummary(q) {
+  const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q + " fragrance")}` +
+              `&format=json&no_html=1&skip_disambig=1`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("lookup failed");
+  return res.json();
+}
+
+let lookupSeq = 0;
+async function doLookup() {
+  const q = document.getElementById("lookup-input").value.trim();
+  const box = document.getElementById("lookup-results");
+  if (!q) { box.innerHTML = ""; return; }
+  const seq = ++lookupSeq; // guard against out-of-order async responses
+
+  const ql = q.toLowerCase();
+  const local = PERFUMES
+    .filter(p => (p.name + " " + p.brand).toLowerCase().includes(ql))
+    .slice(0, 4);
+
+  let html = "";
+  if (local.length) {
+    html += `<span class="lookup-section-lbl">In our library</span>` +
+            local.map(catalogCard).join("");
+  }
+  html += `
+    <div class="webcard">
+      <div class="webcard-head">
+        <span class="lookup-section-lbl" style="margin:0;">Live web result</span>
+        <span class="webcard-status" id="web-status">Searching the web…</span>
+      </div>
+      <div id="web-body"></div>
+      <div class="buy-row links">
+        ${lookupLinks(q).map(b => `<a class="buy${b.sample ? " sample" : ""}" href="${b.url}" target="_blank" rel="noopener">${b.label}</a>`).join("")}
+      </div>
+    </div>`;
+  box.innerHTML = html;
+
+  try {
+    const d = await fetchWebSummary(q);
+    if (seq !== lookupSeq) return; // a newer search superseded this one
+    const status = document.getElementById("web-status");
+    const body = document.getElementById("web-body");
+    if (!status || !body) return;
+    if (d && d.AbstractText) {
+      const img = d.Image
+        ? (d.Image.startsWith("http") ? d.Image : "https://duckduckgo.com" + d.Image)
+        : "";
+      body.innerHTML =
+        `${img ? `<img class="web-img" src="${esc(img)}" alt="" referrerpolicy="no-referrer" />` : ""}
+         <p class="web-abstract">${esc(d.AbstractText)}</p>
+         ${d.AbstractURL ? `<a class="buy" href="${esc(d.AbstractURL)}" target="_blank" rel="noopener">Source: ${esc(d.AbstractSource || "web")}</a>` : ""}`;
+      status.textContent = "";
+    } else {
+      status.textContent = "";
+      body.innerHTML = `<p class="web-abstract muted">No quick web summary for this one — open one of the databases below for the full note breakdown.</p>`;
+    }
+  } catch (e) {
+    if (seq !== lookupSeq) return;
+    const status = document.getElementById("web-status");
+    const body = document.getElementById("web-body");
+    if (status) status.textContent = "";
+    if (body) body.innerHTML = `<p class="web-abstract muted">Live lookup is unavailable right now — use the database links below.</p>`;
+  }
+}
+
+function setupLookup() {
+  const btn = document.getElementById("lookup-btn");
+  const input = document.getElementById("lookup-input");
+  if (!btn || !input) return;
+  btn.addEventListener("click", doLookup);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); doLookup(); }
+  });
+}
+
 /* ------------------------------ run ----------------------------------- */
 
 function run() {
@@ -263,6 +379,7 @@ async function init() {
   setupAutocomplete("like-input", "like-list", "like");
   setupAutocomplete("dislike-input", "dislike-list", "dislike");
   setupBudget();
+  setupLookup();
   document.getElementById("find-btn").addEventListener("click", run);
   document.getElementById("reset-btn").addEventListener("click", () => location.reload());
 }

@@ -64,6 +64,44 @@ body {
 .hero h1 em { font-style: italic; color: var(--accent); }
 .hero-lead { max-width: 560px; color: var(--ink-soft); font-size: 17px; line-height: 1.75; margin: 0; }
 
+/* ------------------------------ live lookup -------------------------------- */
+.lookup { margin: 0 0 60px; }
+.lookup .eyebrow { display: block; margin-bottom: 16px; }
+.lookup-bar {
+  display: flex; align-items: stretch; background: var(--surface);
+  border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; box-shadow: var(--shadow);
+}
+.lookup-bar input {
+  flex: 1; min-width: 0; border: none; background: transparent;
+  padding: 18px 20px; font-family: var(--sans); font-size: 16px; font-weight: 300; color: var(--ink);
+}
+.lookup-bar input::placeholder { color: var(--muted); }
+.lookup-bar input:focus { outline: none; }
+.lookup-bar button {
+  border: none; background: var(--ink); color: var(--accent-ink);
+  padding: 0 36px; font-family: var(--sans); font-size: 12px; letter-spacing: .22em;
+  text-transform: uppercase; cursor: pointer; transition: background-color .18s;
+}
+.lookup-bar button:hover { background: var(--accent); }
+.lookup-hint { font-size: 13px; color: var(--muted); margin: 14px 2px 0; line-height: 1.6; max-width: 620px; }
+.lookup-results { margin-top: 8px; }
+.lookup-results:empty { margin-top: 0; }
+.lookup-section-lbl {
+  display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--accent); margin: 30px 0 6px;
+}
+.lookup-results .pcard { margin-top: 14px; }
+.webcard {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 3px;
+  box-shadow: var(--shadow); padding: 28px 32px; margin-top: 14px;
+}
+.webcard-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.webcard-status { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.web-img { float: right; width: 92px; height: auto; margin: 0 0 12px 18px; border: 1px solid var(--line); border-radius: 2px; }
+.web-abstract { font-size: 15px; line-height: 1.75; color: var(--ink-soft); margin: 14px 0; }
+.web-abstract.muted { color: var(--muted); font-style: italic; font-family: var(--serif); font-size: 18px; }
+.buy-row.links { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); clear: both; }
+
 /* ------------------------------ how-it-works ------------------------------- */
 .how {
   list-style: none; margin: 0 0 64px; padding: 0;
