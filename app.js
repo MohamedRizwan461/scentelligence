@@ -346,7 +346,7 @@ function setupLookup() {
 // in this browser) searches the live web and returns ranked fragrance picks
 // with a match score. The offline engine above remains the default.
 
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 function getKey() { try { return localStorage.getItem("gemini_key") || ""; } catch (_) { return ""; } }
 function setKey(k) { try { k ? localStorage.setItem("gemini_key", k) : localStorage.removeItem("gemini_key"); } catch (_) {} }
