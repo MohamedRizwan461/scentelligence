@@ -175,6 +175,10 @@ function recommend(perfumes, prefs) {
     // always pass (they're commonly recommended to everyone).
     if (prefs.genders && prefs.genders.length &&
         p.gender !== "unisex" && !prefs.genders.includes(p.gender)) continue;
+    // EDP & stronger only: drop the lighter EDTs and colognes.
+    if (prefs.edpOnly && (p.concentration === "EDT" || p.concentration === "Cologne")) continue;
+    // Beast mode: only strong / beast projectors that last all day.
+    if (prefs.beastMode && !(p.strength === "strong" || p.strength === "beast")) continue;
 
     // --- SOFT score: cosine similarity in the full feature space ---
     const vec = perfumeVector(p, idf);

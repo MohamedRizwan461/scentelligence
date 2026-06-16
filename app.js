@@ -23,6 +23,7 @@ const state = {
     strength: "moderate"
   },
   genders: [],         // [] = no filter
+  refine: [],          // may contain "edp" and/or "beast"
   likedIds: [],
   dislikedIds: [],
   budgetMax: 150
@@ -171,7 +172,7 @@ function buyLinks(p) {
     { label: "Amazon", url: `https://www.amazon.com/s?k=${q}` },
     { label: "FragranceX", url: `https://www.fragrancex.com/search/search_results?stext=${q}` },
     { label: "Sephora", url: `https://www.sephora.com/search?keyword=${q}` },
-    { label: "Try a sample first", url: `https://www.scentsplit.com/search?q=${q}`, sample: true }
+    { label: "Sample first", url: `https://www.scentsplit.com/search?q=${q}`, sample: true }
   ];
 }
 
@@ -193,26 +194,26 @@ function renderResults(recs) {
   grid.innerHTML = recs.map(r => {
     const p = r.perfume;
     const reasons = r.reasons.length
-      ? `<div class="reasons">Why it fits: ${r.reasons.map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div>`
+      ? `<div class="reasons"><span class="reasons-lbl">Why it fits</span>${r.reasons.map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div>`
       : "";
     return `
     <div class="pcard">
       <div class="top">
         <div>
           <p class="name">${esc(p.name)}</p>
-          <p class="brand">${esc(p.brand)} · ${esc(p.gender)} · ${esc(p.year)}</p>
+          <p class="brand">${esc(p.brand)} &middot; ${esc(p.gender)} &middot; ${esc(p.year)}</p>
         </div>
-        <div class="match"><span class="pct">${r.matchPct}%</span><span class="lbl">match</span></div>
+        <div class="match"><span class="pct">${r.matchPct}%</span><span class="lbl">Match</span></div>
       </div>
 
-      <div class="smells"><span class="lead">Smells like:</span>${esc(p.smellsLike)}</div>
+      <div class="smells"><span class="lead">Smells like</span>${esc(p.smellsLike)}</div>
       ${reasons}
-      <div class="notes-line">Notes (hover for meaning): ${notePills(p)}</div>
+      <div class="notes-line"><span class="nl-lbl">Notes</span>${notePills(p)}</div>
 
       <div class="meta-row">
         <span class="price">$${p.priceRangeUSD[0]}–$${p.priceRangeUSD[1]}</span>
-        <span>${PRICE_TIER_LABEL[p.priceTier]}</span>
-        <span class="strength-badge">Projection: ${esc(p.strength)}</span>
+        <span><span class="meta-cap">Conc.</span>${esc(p.concentration || "EDP")}</span>
+        <span><span class="meta-cap">Projection</span>${esc(p.strength)}</span>
       </div>
 
       <div class="buy-row">
@@ -238,6 +239,8 @@ function run() {
     dislikedIds: state.dislikedIds,
     budgetMax: state.budgetMax >= 500 ? null : state.budgetMax,
     genders: state.genders,
+    edpOnly: state.refine.includes("edp"),
+    beastMode: state.refine.includes("beast"),
     topN: 8
   });
   renderResults(recs);
@@ -256,6 +259,7 @@ async function init() {
   bindSingleSelect("q-strength", "strength");
   bindMultiSelect("q-family", state.quiz.family);
   bindMultiSelect("q-gender", state.genders);
+  bindMultiSelect("q-refine", state.refine);
   setupAutocomplete("like-input", "like-list", "like");
   setupAutocomplete("dislike-input", "dislike-list", "dislike");
   setupBudget();
