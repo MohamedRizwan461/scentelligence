@@ -4,127 +4,157 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scentelligence — Fragrance Atelier</title>
-  <meta name="description" content="Tell us your taste and budget; we translate fragrance notes into language you can picture, and recommend scents worth buying." />
+  <meta name="description" content="Describe your taste and budget; we translate fragrance notes into language you can picture, and recommend scents worth buying." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="wrap">
 
-    <header class="hero">
-      <span class="eyebrow">Fragrance Atelier</span>
-      <h1>Scent<em>elligence</em></h1>
-      <p class="sub">Notes on a box tell you nothing about how a perfume actually
-        smells — and most bottles can't be returned. Describe your taste and your
-        budget; we translate the notes into plain language and recommend scents
-        worth your money, with a place to sample them first.</p>
-    </header>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span class="wordmark">Scentelligence</span>
+      <span class="topbar-meta">Fragrance Atelier</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="hero">
+      <span class="eyebrow">Find your signature scent</span>
+      <h1>A perfume you can<br /><em>picture</em> before you buy.</h1>
+      <p class="hero-lead">Notes printed on a box tell you nothing about how a
+        fragrance actually smells — and most bottles can't be returned. Describe
+        your taste and your budget; we translate the notes into plain language
+        and suggest scents worth your money, with a way to sample them first.</p>
+    </section>
+
+    <ol class="how">
+      <li>
+        <span class="how-n">01</span>
+        <span class="how-t">Describe your taste</span>
+        <span class="how-d">A few quick preferences. No perfume knowledge required.</span>
+      </li>
+      <li>
+        <span class="how-n">02</span>
+        <span class="how-t">Set a budget</span>
+        <span class="how-d">We only show bottles you can actually afford.</span>
+      </li>
+      <li>
+        <span class="how-n">03</span>
+        <span class="how-t">Get matches you understand</span>
+        <span class="how-d">Each in plain language, with where to buy or sample.</span>
+      </li>
+    </ol>
 
     <div id="load-error" class="hidden">
       Couldn't load the fragrance data. If you opened this file directly, run it
       through a local server (see the README), or use the hosted version.
     </div>
 
-    <!-- STEP 1 -->
-    <section class="step">
-      <div class="step-head">
-        <span class="idx">01</span><h2>Your taste</h2>
-        <p class="hint">No need to know any perfumes — just choose what sounds like you.</p>
-      </div>
-
-      <div class="field">
-        <span class="label">Fresh or warm</span>
-        <div class="choices" id="q-character">
-          <span class="choice" data-value="fresh">Fresh &amp; clean</span>
-          <span class="choice" data-value="balanced">A bit of both</span>
-          <span class="choice" data-value="warm">Warm &amp; cozy</span>
+    <!-- PANEL 01 -->
+    <section class="panel">
+      <aside class="panel-aside">
+        <span class="panel-num">01</span>
+        <h2 class="panel-title">Your taste</h2>
+        <p class="panel-note">Choose whatever sounds like you. You can leave anything blank.</p>
+      </aside>
+      <div class="panel-body">
+        <div class="field">
+          <span class="label">Fresh or warm</span>
+          <div class="choices" id="q-character">
+            <span class="choice" data-value="fresh">Fresh &amp; clean</span>
+            <span class="choice" data-value="balanced">A bit of both</span>
+            <span class="choice" data-value="warm">Warm &amp; cozy</span>
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <span class="label">Sweet or dry</span>
-        <div class="choices" id="q-sweetness">
-          <span class="choice" data-value="sweet">Sweet</span>
-          <span class="choice" data-value="balanced">Balanced</span>
-          <span class="choice" data-value="dry">Dry, not sweet</span>
+        <div class="field">
+          <span class="label">Sweet or dry</span>
+          <div class="choices" id="q-sweetness">
+            <span class="choice" data-value="sweet">Sweet</span>
+            <span class="choice" data-value="balanced">Balanced</span>
+            <span class="choice" data-value="dry">Dry, not sweet</span>
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <span class="label">Scent families you're drawn to</span>
-        <div class="choices" id="q-family">
-          <span class="choice" data-value="citrus">Citrus</span>
-          <span class="choice" data-value="aquatic">Aquatic</span>
-          <span class="choice" data-value="green">Green</span>
-          <span class="choice" data-value="floral">Floral</span>
-          <span class="choice" data-value="sweet">Sweet</span>
-          <span class="choice" data-value="gourmand">Gourmand</span>
-          <span class="choice" data-value="woody">Woody</span>
-          <span class="choice" data-value="spicy">Spicy</span>
-          <span class="choice" data-value="smoky">Smoky</span>
-          <span class="choice" data-value="leather">Leather</span>
-          <span class="choice" data-value="powdery">Powdery</span>
+        <div class="field">
+          <span class="label">Scent families you're drawn to</span>
+          <div class="choices" id="q-family">
+            <span class="choice" data-value="citrus">Citrus</span>
+            <span class="choice" data-value="aquatic">Aquatic</span>
+            <span class="choice" data-value="green">Green</span>
+            <span class="choice" data-value="floral">Floral</span>
+            <span class="choice" data-value="sweet">Sweet</span>
+            <span class="choice" data-value="gourmand">Gourmand</span>
+            <span class="choice" data-value="woody">Woody</span>
+            <span class="choice" data-value="spicy">Spicy</span>
+            <span class="choice" data-value="smoky">Smoky</span>
+            <span class="choice" data-value="leather">Leather</span>
+            <span class="choice" data-value="powdery">Powdery</span>
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <span class="label">Season</span>
-        <div class="choices" id="q-season">
-          <span class="choice" data-value="any">Any time</span>
-          <span class="choice" data-value="summer">Summer</span>
-          <span class="choice" data-value="spring">Spring</span>
-          <span class="choice" data-value="winter">Winter</span>
+        <div class="field-row">
+          <div class="field">
+            <span class="label">Season</span>
+            <div class="choices" id="q-season">
+              <span class="choice" data-value="any">Any time</span>
+              <span class="choice" data-value="summer">Summer</span>
+              <span class="choice" data-value="spring">Spring</span>
+              <span class="choice" data-value="winter">Winter</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label">Occasion</span>
+            <div class="choices" id="q-occasion">
+              <span class="choice" data-value="everyday">Everyday</span>
+              <span class="choice" data-value="office">Office</span>
+              <span class="choice" data-value="date">Date</span>
+              <span class="choice" data-value="night">Night out</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <span class="label">Occasion</span>
-        <div class="choices" id="q-occasion">
-          <span class="choice" data-value="everyday">Everyday</span>
-          <span class="choice" data-value="office">Office</span>
-          <span class="choice" data-value="date">Date</span>
-          <span class="choice" data-value="night">Night out</span>
+        <div class="field-row">
+          <div class="field">
+            <span class="label">Projection</span>
+            <div class="choices" id="q-strength">
+              <span class="choice" data-value="soft">Soft &amp; close</span>
+              <span class="choice selected" data-value="moderate">Moderate</span>
+              <span class="choice" data-value="strong">Strong</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label">Marketed for (optional)</span>
+            <div class="choices" id="q-gender">
+              <span class="choice" data-value="men">Men</span>
+              <span class="choice" data-value="women">Women</span>
+              <span class="choice" data-value="unisex">Unisex</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <span class="label">Projection</span>
-        <div class="choices" id="q-strength">
-          <span class="choice" data-value="soft">Soft &amp; close</span>
-          <span class="choice selected" data-value="moderate">Moderate</span>
-          <span class="choice" data-value="strong">Strong</span>
+        <div class="field">
+          <span class="label">Refine</span>
+          <div class="choices" id="q-refine">
+            <span class="choice accent" data-value="edp">EDP &amp; stronger only</span>
+            <span class="choice accent" data-value="beast">Beast mode — long-lasting only</span>
+          </div>
+          <p class="field-note">EDP &amp; stronger drops the lighter EDTs and colognes. Beast mode keeps only the strong, all-day projectors.</p>
         </div>
-      </div>
-
-      <div class="field">
-        <span class="label">Marketed for (optional)</span>
-        <div class="choices" id="q-gender">
-          <span class="choice" data-value="men">Men</span>
-          <span class="choice" data-value="women">Women</span>
-          <span class="choice" data-value="unisex">Unisex</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <span class="label">Refine</span>
-        <div class="choices" id="q-refine">
-          <span class="choice accent" data-value="edp">EDP &amp; stronger only</span>
-          <span class="choice accent" data-value="beast">Beast mode — long-lasting only</span>
-        </div>
-        <p class="hint">EDP &amp; stronger drops the lighter EDTs and colognes. Beast mode keeps only the strong, all-day projectors.</p>
       </div>
     </section>
 
-    <!-- STEP 2 -->
-    <section class="step">
-      <div class="step-head">
-        <span class="idx">02</span><h2>Perfumes you know</h2>
-        <p class="hint">Optional, but it sharpens the recommendation considerably.</p>
-      </div>
-
-      <div class="dual-input">
+    <!-- PANEL 02 -->
+    <section class="panel">
+      <aside class="panel-aside">
+        <span class="panel-num">02</span>
+        <h2 class="panel-title">Perfumes you know</h2>
+        <p class="panel-note">Optional, but naming even one or two sharpens the match considerably.</p>
+      </aside>
+      <div class="panel-body">
         <div class="field">
           <span class="label">Perfumes you love</span>
           <div class="ac">
@@ -145,26 +175,34 @@
       </div>
     </section>
 
-    <!-- STEP 3 -->
-    <section class="step">
-      <div class="step-head">
-        <span class="idx">03</span><h2>Budget</h2>
-        <p class="hint">The most you'd spend on a bottle. We only show what you can afford.</p>
-      </div>
-      <div class="budget-row">
-        <span class="budget-val" id="budget-val">$150</span>
-        <input type="range" id="budget" min="20" max="500" step="10" value="150" />
+    <!-- PANEL 03 -->
+    <section class="panel">
+      <aside class="panel-aside">
+        <span class="panel-num">03</span>
+        <h2 class="panel-title">Budget</h2>
+        <p class="panel-note">The most you'd spend on a bottle. We hide anything above it.</p>
+      </aside>
+      <div class="panel-body">
+        <div class="budget-row">
+          <span class="budget-val" id="budget-val">$150</span>
+          <input type="range" id="budget" min="20" max="500" step="10" value="150" />
+        </div>
+        <div class="budget-scale"><span>$20</span><span>$500+</span></div>
       </div>
     </section>
 
-    <div class="cta-row">
+    <div class="cta-panel">
       <button class="primary" id="find-btn">Reveal my matches</button>
+      <p class="cta-sub">165 fragrances &middot; matched privately in your browser</p>
     </div>
 
     <!-- RESULTS -->
     <section id="results" class="hidden">
       <div class="results-head">
-        <h2>Your matches</h2>
+        <div>
+          <span class="eyebrow">Curated for you</span>
+          <h2>Your matches</h2>
+        </div>
         <button class="ghost" id="reset-btn">Start over</button>
       </div>
       <div class="results-grid" id="results-grid"></div>
@@ -177,8 +215,14 @@
       </p>
     </section>
 
-    <footer>Scentelligence — an in-browser fragrance matcher</footer>
-  </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="wordmark">Scentelligence</span>
+      <span class="footer-note">An in-browser fragrance matcher. No account, no tracking.</span>
+    </div>
+  </footer>
 
   <script src="data.js"></script>
   <script src="engine.js"></script>
